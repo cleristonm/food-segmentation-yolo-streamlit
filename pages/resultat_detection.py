@@ -3,6 +3,7 @@ from ultralytics import YOLO
 import tempfile
 import pandas as pd
 import time
+import json
 
 
 st.set_page_config(
@@ -10,6 +11,7 @@ st.set_page_config(
     page_icon="🔍",
     layout="wide"
 )
+
 
 st.markdown("""
 <style>
@@ -70,7 +72,14 @@ def charger_modele():
     return YOLO("models/best.pt")
 
 
+@st.cache_data
+def charger_nutrition():
+    with open("assets/nutrition.json", "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
 model = charger_modele()
+nutrition_data = charger_nutrition()
 
 
 if "image_originale" not in st.session_state or st.session_state["image_originale"] is None:
@@ -117,23 +126,41 @@ if result.boxes is not None and len(result.boxes) > 0:
     for box in result.boxes:
         classe_id = int(box.cls[0])
         score = float(box.conf[0])
-        nom_aliment = model.names[classe_id]
+        nom_aliment_modele = model.names[classe_id]
+
+        infos = nutrition_data.get(nom_aliment_modele, {})
 
         donnees.append({
-            "Aliment détecté": nom_aliment,
-            "Certitude (%)": round(score * 100, 2)
+            "Aliment détecté": infos.get("nom_fr", nom_aliment_modele),
+            "Nom modèle": nom_aliment_modele,
+            "Certitude (%)": round(score * 100, 2),
+            "Calories / 100g": infos.get("calories_100g", "N/A"),
+            "Protéines / 100g": infos.get("proteines_100g", "N/A"),
+            "Glucides / 100g": infos.get("glucides_100g", "N/A"),
+            "Lipides / 100g": infos.get("lipides_100g", "N/A"),
+            "Conseil": infos.get("conseil", "Aucun conseil nutritionnel disponible.")
         })
 
 
 df_resultats = pd.DataFrame(
     donnees,
-    columns=["Aliment détecté", "Certitude (%)"]
+    columns=[
+        "Aliment détecté",
+        "Nom modèle",
+        "Certitude (%)",
+        "Calories / 100g",
+        "Protéines / 100g",
+        "Glucides / 100g",
+        "Lipides / 100g",
+        "Conseil"
+    ]
 )
 
 
-onglet1, onglet2 = st.tabs([
+onglet1, onglet2, onglet3 = st.tabs([
     "Résultat de l’analyse",
-    "Image originale"
+    "Image originale",
+    "Conseils nutritionnels"
 ])
 
 
@@ -154,7 +181,8 @@ with onglet1:
             st.dataframe(
                 df_resultats,
                 use_container_width=True,
-                hide_index=True
+                hide_index=True,
+                height=500
             )
 
             if result.masks is not None:
@@ -177,3 +205,26 @@ with onglet2:
         caption="Image originale",
         width=700
     )
+
+
+with onglet3:
+    st.subheader("Suggestions nutritionnelles")
+
+    if len(df_resultats) > 0:
+        for _, row in df_resultats.iterrows():
+
+            st.markdown(f"""
+### 🥗 {row["Aliment détecté"]}
+
+- 🔥 **Calories :** {row["Calories / 100g"]} kcal / 100g
+- 💪 **Protéines :** {row["Protéines / 100g"]} g / 100g
+- 🍞 **Glucides :** {row["Glucides / 100g"]} g / 100g
+- 🧈 **Lipides :** {row["Lipides / 100g"]} g / 100g
+
+💡 **Conseil nutritionnel :**  
+{row["Conseil"]}
+
+---
+""")
+    else:
+        st.warning("Aucun conseil nutritionnel disponible.")
