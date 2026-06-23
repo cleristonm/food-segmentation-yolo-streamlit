@@ -1,0 +1,35 @@
+name: Publish Kaggle Notebook
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - notebooks/**
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    env:
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Kaggle CLI
+        run: pip install kaggle
+
+      - name: Validate notebook structure
+        run: |
+          ls -la notebooks/
+
+      - name: Push notebook to Kaggle
+        run: kaggle kernels push -p notebooks/
