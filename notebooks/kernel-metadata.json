@@ -1,6 +1,6 @@
 {
-  "id": "foodseg-training",
-  "title": "FoodSeg Training",
+  "id": "cleristonmartinelo/foodseg-training",
+  "title": "foodseg-training",
   "code_file": "train.ipynb",
   "language": "python",
   "kernel_type": "notebook",
