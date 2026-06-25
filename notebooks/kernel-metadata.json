@@ -7,6 +7,7 @@
   "is_private": true,
   "enable_gpu": true,
   "enable_internet": true,
+  "accelerator": "nvidia-tesla-t4",
   "dataset_sources": [
     "cleristonmartinelo/foodsegmentation"
   ]
