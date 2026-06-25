@@ -1,0 +1,44 @@
+name: Sync Kaggle Dataset
+
+on:
+  push:
+    branches:
+      - dataset-sync
+    paths:
+      - new_data/**
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    env:
+      KAGGLE_USERNAME: cleristonmartinelo
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install Kaggle CLI
+        run: pip install kaggle
+
+      - name: Download current dataset
+        run: |
+          kaggle datasets download cleristonmartinelo/foodsegmentation -p dataset
+          unzip dataset/*.zip -d dataset/current
+
+      - name: Merge new images
+        run: |
+          cp new_data/images/* dataset/current/images/
+          cp new_data/masks/* dataset/current/masks/
+
+      - name: Publish new dataset version
+        run: |
+          kaggle datasets version -p dataset/current -m "Added new images"
+
+      - name: Trigger notebook retraining
+        run: |
+          kaggle kernels push -p notebooks/
