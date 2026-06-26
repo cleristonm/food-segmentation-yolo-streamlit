@@ -1,0 +1,2 @@
+timestamp,seed,sample_size,val_size,epochs,best_box_map50,best_box_map50_95,best_mask_map50,best_mask_map50_95,promoted
+2026-06-26T22:27:35.452566,786676,4983,2135,50,0.26617,0.21644,0.26552,0.20499,True
