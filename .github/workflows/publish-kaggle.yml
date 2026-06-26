@@ -24,18 +24,5 @@ jobs:
       - name: Install Kaggle CLI
         run: pip install kaggle
 
-      - name: Run notebook 10 times
-        run: |
-          for i in {1..10}
-          do
-            echo "=============================="
-            echo "Exécution $i/10"
-            echo "=============================="
-
-            kaggle kernels push -p notebooks/
-
-            if [ $i -lt 10 ]; then
-              echo "Attente de 20 minutes avant la prochaine exécution..."
-              sleep 1200
-            fi
-          done
+      - name: Push notebook to Kaggle
+        run: kaggle kernels push -p notebooks/
