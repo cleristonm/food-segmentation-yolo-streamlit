@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - notebooks/train.ipynb
-      - notebooks/train_experiments.ipynb
+      - notebooks/train/**
+      - notebooks/train_experiments/**
 
 jobs:
   publish:
@@ -25,5 +25,8 @@ jobs:
       - name: Install Kaggle CLI
         run: pip install kaggle
 
-      - name: Push notebook to Kaggle
-        run: kaggle kernels push -p notebooks/
+      - name: Push train
+        run: kaggle kernels push -p notebooks/train
+
+      - name: Push experiments
+        run: kaggle kernels push -p notebooks/train_experiments
