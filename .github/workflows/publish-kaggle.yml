@@ -25,8 +25,5 @@ jobs:
       - name: Install Kaggle CLI
         run: pip install kaggle
 
-      - name: Push train notebook
-        run: kaggle kernels push -p notebooks/train
-
-      - name: Push experiments notebook
-        run: kaggle kernels push -p notebooks/train_experiments
+      - name: Push notebook to Kaggle
+        run: kaggle kernels push -p notebooks/
