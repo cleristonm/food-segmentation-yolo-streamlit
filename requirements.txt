@@ -7,3 +7,5 @@ streamlit
 mlflow
 psycopg2-binary
 ultralytics
+dvc 
+dvc-azure
