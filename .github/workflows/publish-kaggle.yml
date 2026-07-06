@@ -7,6 +7,8 @@ on:
     paths:
       - notebooks/train/**
       - notebooks/train_experiments/**
+      - .dvc/**
+      - dataset.dvc
 
 jobs:
   publish:
@@ -27,20 +29,53 @@ jobs:
           python-version: "3.11"
 
       - name: Install Kaggle CLI
-        run: pip install kaggle
+        run: |
+          pip install kaggle
 
       - name: Get changed files
         id: changed
         uses: tj-actions/changed-files@v47
 
+      ####################################################################
+      # TRAIN NOTEBOOK
+      ####################################################################
+
+      - name: Prepare train package
+        if: contains(steps.changed.outputs.all_changed_files, 'notebooks/train/') || contains(steps.changed.outputs.all_changed_files, '.dvc/') || contains(steps.changed.outputs.all_changed_files, 'dataset.dvc')
+        run: |
+          mkdir -p kaggle_train_package
+
+          cp -R notebooks/train/* kaggle_train_package/
+
+          mkdir -p kaggle_train_package/.dvc
+
+          cp .dvc/config kaggle_train_package/.dvc/
+          cp dataset.dvc kaggle_train_package/
+
       - name: Publish train notebook
-        if: contains(steps.changed.outputs.all_changed_files, 'notebooks/train/')
+        if: contains(steps.changed.outputs.all_changed_files, 'notebooks/train/') || contains(steps.changed.outputs.all_changed_files, '.dvc/') || contains(steps.changed.outputs.all_changed_files, 'dataset.dvc')
         run: |
           echo "Publishing notebooks/train"
-          kaggle kernels push -p notebooks/train
+          kaggle kernels push -p kaggle_train_package
+
+      ####################################################################
+      # TRAIN EXPERIMENTS NOTEBOOK
+      ####################################################################
+
+      - name: Prepare train_experiments package
+        if: contains(steps.changed.outputs.all_changed_files, 'notebooks/train_experiments/') || contains(steps.changed.outputs.all_changed_files, '.dvc/') || contains(steps.changed.outputs.all_changed_files, 'dataset.dvc')
+        run: |
+          mkdir -p kaggle_train_experiments_package
+
+          cp -R notebooks/train_experiments/* kaggle_train_experiments_package/
+
+          mkdir -p kaggle_train_experiments_package/.dvc
+
+          cp .dvc/config kaggle_train_experiments_package/.dvc/
+          cp dataset.dvc kaggle_train_experiments_package/
 
       - name: Publish train_experiments notebook
-        if: contains(steps.changed.outputs.all_changed_files, 'notebooks/train_experiments/')
+        if: contains(steps.changed.outputs.all_changed_files, 'notebooks/train_experiments/') || contains(steps.changed.outputs.all_changed_files, '.dvc/') || contains(steps.changed.outputs.all_changed_files, 'dataset.dvc')
         run: |
           echo "Publishing notebooks/train_experiments"
-          kaggle kernels push -p notebooks/train_experiments
+          kaggle kernels push -p kaggle_train_experiments_package
