@@ -2,3 +2,4 @@
     remote = azure
 ['remote "azure"']
     url = azure://foodseg-dataset
+    connection_string = DefaultEndpointsProtocol=https;AccountName=foodsegmentationdataset;AccountKey=yp4rvetIYvBmWNO8JiR+qqSYFnulWXoR/I3prPGk5maJ0B9tc3OjlaGgSXe7oRvAx4PSdK7VIAA/+AStIhN0Fw==;EndpointSuffix=core.windows.net

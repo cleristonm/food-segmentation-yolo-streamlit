@@ -9,3 +9,12 @@ psycopg2-binary
 ultralytics
 dvc 
 dvc-azure
+
+fastapi
+uvicorn[standard]
+python-multipart
+
+opencv-python
+pillow
+streamlit-autorefresh
+pydantic
