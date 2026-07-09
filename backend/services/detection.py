@@ -14,34 +14,47 @@ def load_best_model():
     experiment = client.get_experiment_by_name(EXPERIMENT_NAME)
 
     if experiment is None:
-        raise Exception(f"Expérience '{EXPERIMENT_NAME}' introuvable.")
+        raise RuntimeError(
+            f"Expérience '{EXPERIMENT_NAME}' introuvable."
+        )
 
     runs = client.search_runs(
         experiment_ids=[experiment.experiment_id],
+        filter_string="attributes.status = 'FINISHED'",
         order_by=["metrics.map50_mask DESC"],
         max_results=1,
     )
 
-    if not runs:
-        raise Exception("Aucun modèle trouvé.")
+    if len(runs) == 0:
+        raise RuntimeError("Aucun run terminé trouvé.")
 
     best_run = runs[0]
 
-    run_id = best_run.info.run_id
+    metric = best_run.data.metrics.get("map50_mask")
 
-    print(f"Best Run : {run_id}")
-    print(
-        f"mAP50 Mask : "
-        f"{best_run.data.metrics.get('map50_mask')}"
-    )
+    if metric is None:
+        raise RuntimeError(
+            "Le meilleur run ne possède pas la métrique map50_mask."
+        )
+
+    run_id = best_run.info.run_id
 
     artifact_uri = (
         f"runs:/{run_id}/training/weights/best.pt"
     )
 
+    print("=" * 60)
+    print("Chargement du modèle depuis MLflow")
+    print(f"Run        : {run_id}")
+    print(f"mAP50 Mask : {metric:.4f}")
+    print(f"Artifact   : {artifact_uri}")
+    print("=" * 60)
+
     local_model = mlflow.artifacts.download_artifacts(
         artifact_uri=artifact_uri
     )
+
+    print(f"Modèle téléchargé : {local_model}")
 
     return YOLO(local_model)
 
