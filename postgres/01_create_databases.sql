@@ -1,0 +1,7 @@
+CREATE DATABASE food_ai_db;
+
+CREATE USER food_ai WITH PASSWORD 'food_ai123';
+
+GRANT ALL PRIVILEGES
+ON DATABASE food_ai_db
+TO food_ai;

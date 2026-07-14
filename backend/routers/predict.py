@@ -10,7 +10,7 @@ from PIL import Image
 import tempfile
 import numpy as np
 import os
-
+import traceback
 
 logging.basicConfig(level=logging.INFO)
 
@@ -105,6 +105,7 @@ async def predict(file: UploadFile = File(...)):
 
     except Exception as e:
 
+        traceback.print_exc()
         raise HTTPException(
             status_code=500,
             detail=str(e)

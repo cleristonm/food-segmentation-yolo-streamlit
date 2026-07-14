@@ -18,3 +18,6 @@ opencv-python
 pillow
 streamlit-autorefresh
 pydantic
+
+sqlalchemy 
+psycopg2-binary

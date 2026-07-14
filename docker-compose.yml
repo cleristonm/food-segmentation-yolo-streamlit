@@ -4,14 +4,18 @@ services:
     image: postgres:16
     container_name: mlflow-postgres
     restart: always
+
     environment:
       POSTGRES_USER: mlflow
       POSTGRES_PASSWORD: mlflow123
       POSTGRES_DB: mlflow_db
+
     ports:
       - "5432:5432"
+
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data      
+      - ./postgres:/docker-entrypoint-initdb.d
 
   mlflow:
     build:

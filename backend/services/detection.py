@@ -1,7 +1,7 @@
 import mlflow
 from mlflow import MlflowClient
 from ultralytics import YOLO
-
+from datetime import datetime
 from config import TRACKING_URI, EXPERIMENT_NAME
 
 mlflow.set_tracking_uri(TRACKING_URI)
@@ -43,11 +43,20 @@ def load_best_model():
         f"runs:/{run_id}/training/weights/best.pt"
     )
 
+    run_date = datetime.fromtimestamp(
+        best_run.info.start_time / 1000
+    )
+
     print("=" * 60)
-    print("Chargement du modèle depuis MLflow")
-    print(f"Run        : {run_id}")
-    print(f"mAP50 Mask : {metric:.4f}")
-    print(f"Artifact   : {artifact_uri}")
+    print("Chargement du meilleur modèle MLflow")
+    print()
+    print(f"Run ID        : {run_id}")
+    print(f"Date          : {run_date:%Y-%m-%d %H:%M:%S}")
+    print(f"YOLO          : {best_run.data.params.get('model_name')}")
+    print(f"Seed          : {best_run.data.params.get('seed')}")
+    print(f"Epochs        : {best_run.data.params.get('epochs')}")
+    print(f"mAP50 Mask    : {metric:.4f}")
+    print(f"Artifact      : {artifact_uri}")
     print("=" * 60)
 
     local_model = mlflow.artifacts.download_artifacts(
@@ -55,6 +64,7 @@ def load_best_model():
     )
 
     print(f"Modèle téléchargé : {local_model}")
+    print("Modèle YOLO prêt.")
 
     return YOLO(local_model)
 

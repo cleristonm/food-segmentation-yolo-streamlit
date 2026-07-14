@@ -13,3 +13,6 @@ TRACKING_URI = (
 EXPERIMENT_NAME = "foodseg-yolo"
 
 NUTRITION_PATH = BASE_DIR / "assets" / "nutrition.json"
+
+DATABASE_URL = "postgresql+psycopg2://food_ai:food_ai123@localhost:5432/food_ai_db"
+
