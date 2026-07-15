@@ -83,4 +83,4 @@ mlruns/
 
 .DS_Store
 Thumbs.db
-mlflow_data
+mlflow_data/
